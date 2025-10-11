@@ -5,6 +5,7 @@ import App from '@/App.vue'
 import router from '@/router/index'
 import '@arco-design/web-vue/dist/arco.css'
 import '@/assets/styles/tailwind.css'
+import '@/assets/styles/index.scss'
 import { registerGlobalComponents } from '@/components/globalComponents'
 
 const app = createApp(App)

@@ -1,89 +1,141 @@
 <template>
   <div class="main-content">
     <div class="main-row">
-      <!-- 诊断区（业务） -->
-      <div class="case-wrapper">
-        <a-card :bordered="false" class="medical-record-card">
-          <!-- 顶部导航 -->
-          <div class="top-navigation">
-            <div class="nav-left">
-              <a-button class="return-btn" @click="onReturn"> 返回 </a-button>
-            </div>
-          </div>
-          
-          <!-- 主标题 -->
-          <div class="main-title">
-            <h1>AI诊断分析小结</h1>
-          </div>
-
-          <!-- 患者信息 -->
-          <div class="patient-info flex items-center justify-between">
-            <div class="patient-details">
-              <span class="patient-label">患者：</span>
-              <div class="flex flex-row gap-[24px]">
-                <span class="patient-value">匿名患者</span>
-                <span class="patient-gender">男性</span>
-                <span class="patient-age">16岁</span>
+      <a-spin :loading="loading" tip="AI诊断分析中..." dot class="w-[100%]">
+        <!-- 实际内容 -->
+        <div class="case-wrapper">
+          <a-card :bordered="false" class="medical-record-card">
+            <!-- 顶部导航 -->
+            <div class="top-navigation">
+              <div class="nav-left">
+                <a-button class="return-btn" @click="onReturn"> 返回 </a-button>
               </div>
             </div>
-            <div class="consultation-time">
-              <span class="time-label">就诊时间：</span>
-              <span class="time-value">{{ nowText }}</span>
-            </div>
-          </div>
 
-          <!-- 诊断内容区 -->
-          <div class="medical-record-content">
-            <div class="record-section">
-              <div class="section-label">初步诊断：</div>
-              <div class="section-content">牙颌面畸形</div>
+            <!-- 主标题 -->
+            <div class="main-title">
+              <h1>AI诊断分析小结</h1>
             </div>
 
-            <div class="record-section">
-              <div class="section-label">建议就诊：</div>
-              <div class="section-content">口腔科</div>
+            <!-- 骨架屏 -->
+            <SkeletonCard v-if="skeletonLoading" :section-count="5" />
+            <div v-else class="scroll-content">
+              <!-- 患者信息 -->
+              <div class="patient-info flex items-center justify-between">
+                <div class="patient-details">
+                  <!-- <span class="patient-label">患者：</span> -->
+                  <div class="flex flex-row gap-[24px]">
+                    <span class="patient-value">
+                      {{ patientInfo || "匿名患者" }}
+                    </span>
+                    <!-- <span class="patient-gender">男性</span>
+                    <span class="patient-age">16岁</span> -->
+                  </div>
+                </div>
+                <!-- <div class="consultation-time">
+                  <span class="time-label">就诊时间：</span>
+                  <span class="time-value">{{ nowText }}</span>
+                </div> -->
+              </div>
+
+              <!-- 诊断内容区 -->
+              <div class="medical-record-content">
+                <div class="record-section">
+                  <div class="section-label">初步诊断：</div>
+                  <div class="section-content">
+                    {{ diagnosisResult?.preliminary_diagnosis || "无" }}
+                  </div>
+                </div>
+
+                <div class="record-section">
+                  <div class="section-label">建议就诊：</div>
+                  <div class="section-content">
+                    {{ diagnosisResult?.recommended_department || "无" }}
+                  </div>
+                </div>
+
+                <div class="record-section">
+                  <div class="section-label">检验推荐：</div>
+                  <div class="section-content">
+                    {{ diagnosisResult?.recommended_lab_tests || "无" }}
+                  </div>
+                </div>
+
+                <div class="record-section">
+                  <div class="section-label">检查推荐：</div>
+                  <div class="section-content">
+                    {{ diagnosisResult?.recommended_examinations || "无" }}
+                  </div>
+                </div>
+
+                <div class="record-section">
+                  <div class="section-label">治疗建议：</div>
+                  <div class="section-content">
+                    {{ diagnosisResult?.treatment_recommendations || "无" }}
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div class="record-section">
-              <div class="section-label">检验推荐：</div>
-              <div class="section-content">血常规</div>
+            <!-- 操作按钮 -->
+            <div class="action-buttons">
+              <a-button class="action-btn secondary-btn" @click="onRefresh">
+                <template #icon><icon-sync /></template>
+                重新分析
+              </a-button>
+              <a-button class="action-btn primary-btn" @click="onSave">
+                <template #icon><icon-calendar /></template>
+                预约挂号
+              </a-button>
             </div>
-
-            <div class="record-section">
-              <div class="section-label">检查推荐：</div>
-              <div class="section-content">CBCT、核磁</div>
-            </div>
-
-            <div class="record-section">
-              <div class="section-label">治疗建议：</div>
-              <div class="section-content">牙颌面矫正手术</div>
-            </div>
-          </div>
-
-          <!-- 操作按钮 -->
-          <div class="action-buttons">
-            <a-button class="action-btn secondary-btn" @click="onRefresh">
-              <template #icon><icon-sync /></template>
-              重新分析
-            </a-button>
-            <a-button class="action-btn primary-btn" @click="onSave">
-              <template #icon><icon-calendar /></template>
-              预约挂号
-            </a-button>
-          </div>
-        </a-card>
-      </div>
+          </a-card>
+        </div>
+      </a-spin>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { Message } from "@arco-design/web-vue";
 import { IconSync, IconCalendar } from "@arco-design/web-vue/es/icon";
+import { useChatStore } from "../stores/chat";
+import { http } from "../services/http";
+
+interface DiagnosisResponse {
+  preliminary_diagnosis: string;
+  recommended_department: string;
+  recommended_examinations: string;
+  recommended_lab_tests: string;
+  treatment_recommendations: string;
+}
+
+interface RecordResponse {
+  allergy_history: string;
+  chief_complaint: string;
+  family_history: string;
+  past_medical_history: string;
+  present_illness: string;
+}
 
 const router = useRouter();
+const chatStore = useChatStore();
+
+// 从全局 store 读取 sessionId 与 messages
+const sessionId = computed(() => chatStore.sessionId);
+const messages = computed(() => chatStore.messages);
+
+const nowText = ref(formatNow());
+
+// 页面加载状态
+const loading = ref(false);
+const skeletonLoading = ref(true);
+
+// 诊断结果
+const diagnosisResult = ref<DiagnosisResponse>();
+// 患者信息
+const patientInfo = ref<string>("匿名患者");
 
 function formatNow() {
   const d = new Date();
@@ -93,15 +145,54 @@ function formatNow() {
   )}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
 }
 
-const nowText = ref(formatNow());
+// 获取诊断结果
+async function getDiagnosisResult(isRefresh = false) {
+  try {
+    loading.value = true;
+    const payload = {
+      conversation: messages.value.slice(1).map((x) => ({
+        role: x.role === "user" ? "user" : "assistant",
+        content: x.content,
+      })),
+      session_id: sessionId.value,
+    };
+    const response = await http.post<{
+      preliminary_diagnosis: DiagnosisResponse;
+      chief_complaint: RecordResponse;
+    }>("/chat-diagnosis", payload, { showErrorMessage: true });
+
+    // 处理返回的诊断结果
+    const responseData =
+      response && "data" in response ? response.data : response;
+    if (responseData) {
+      diagnosisResult.value = responseData.preliminary_diagnosis;
+      patientInfo.value = responseData.chief_complaint.present_illness;
+      skeletonLoading.value = false;
+    }
+    if (isRefresh) {
+      Message.success("诊断已重新分析");
+    }
+  } catch (err) {
+    // 错误提示在 http 封装已处理（当 showErrorMessage 为 true）
+  } finally {
+    loading.value = false;
+  }
+}
+
+// 进入页面调用 chat-diagnosis 接口
+onMounted(() => {
+  getDiagnosisResult();
+});
 
 function onRefresh() {
+  skeletonLoading.value = true;
   nowText.value = formatNow();
-  Message.success("诊断已重新分析");
+  getDiagnosisResult(true);
 }
 
 function onReturn() {
-  router.back();
+  // router.back();
+  router.push({ name: "effect" })
 }
 
 function onSave() {
@@ -112,10 +203,13 @@ function onSave() {
 <style lang="scss" scoped>
 /* 主容器样式 */
 .main-content {
-  height: 100%;
+  // height: 100%;
+  // overflow-y: auto;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  // padding: 20px;
+  box-sizing: border-box;
 }
 
 /* 顶部导航 */
@@ -162,30 +256,30 @@ function onSave() {
   max-width: 1200px;
   height: 100%;
   margin: 0 auto;
-  padding: 24px;
+  // padding: 24px;
   position: relative;
   z-index: 1;
 }
 
 .case-wrapper {
   width: 100%;
+  height: 100%;
 }
 
 /* 病历卡片样式 */
 .medical-record-card {
+  height: 100%;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-radius: 24px;
-  box-shadow: 
-    0 20px 40px rgba(59, 130, 246, 0.1),
-    0 8px 16px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  box-shadow: 0 20px 40px rgba(59, 130, 246, 0.1),
+    0 8px 16px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.2);
   overflow: hidden;
   position: relative;
-  
+
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -195,7 +289,9 @@ function onSave() {
   }
 
   :deep(.arco-card-body) {
+    height: 100%;
     padding: 40px;
+    box-sizing: border-box;
   }
 }
 
@@ -215,9 +311,9 @@ function onSave() {
     margin: 0;
     letter-spacing: 0.5px;
     position: relative;
-    
+
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       bottom: -8px;
       left: 50%;
@@ -237,8 +333,7 @@ function onSave() {
   padding: 24px;
   margin-bottom: 32px;
   border: 1px solid rgba(59, 130, 246, 0.1);
-  box-shadow: 
-    0 4px 12px rgba(59, 130, 246, 0.05),
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
   position: relative;
 }
@@ -277,8 +372,7 @@ function onSave() {
   border-radius: 16px;
   padding: 28px;
   margin-bottom: 32px;
-  box-shadow: 
-    0 8px 20px rgba(59, 130, 246, 0.05),
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
   position: relative;
 }
@@ -313,15 +407,13 @@ function onSave() {
   padding: 16px 20px;
   border-radius: 12px;
   border: 1px solid rgba(59, 130, 246, 0.1);
-  box-shadow: 
-    0 2px 8px rgba(59, 130, 246, 0.05),
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
   transition: all 0.3s ease;
-  
+
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 
-      0 4px 12px rgba(59, 130, 246, 0.1),
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1),
       inset 0 1px 0 rgba(255, 255, 255, 0.9);
   }
 }
@@ -341,21 +433,23 @@ function onSave() {
   transition: all 0.3s ease;
 
   &.secondary-btn {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%);
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.9) 0%,
+        rgba(248, 250, 252, 0.9) 100%);
     border: 1px solid rgba(59, 130, 246, 0.2);
     color: #64748b;
     backdrop-filter: blur(10px);
-    box-shadow: 
-      0 4px 12px rgba(59, 130, 246, 0.1),
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1),
       inset 0 1px 0 rgba(255, 255, 255, 0.8);
 
     &:hover:not(:disabled) {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+      background: linear-gradient(135deg,
+          rgba(255, 255, 255, 0.95) 0%,
+          rgba(248, 250, 252, 0.95) 100%);
       border-color: #3b82f6;
       color: #1e40af;
       transform: translateY(-2px);
-      box-shadow: 
-        0 8px 20px rgba(59, 130, 246, 0.15),
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15),
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
     }
   }
@@ -409,4 +503,3 @@ function onSave() {
   }
 }
 </style>
-

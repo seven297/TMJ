@@ -6,50 +6,66 @@
         <a-card :bordered="false" class="sidebar-card">
           <template #title>
             <div class="sidebar-title">
-              <div class="title-icon">🔬</div>
+              <div class="title-icon">
+                <img src="@/assets/icons/microscope.png" class="emoji-16px" />
+              </div>
               <span class="title-text">多模态AI分析工具</span>
             </div>
           </template>
           <a-list :bordered="false" size="small" class="analysis-list">
             <a-list-item class="analysis-item" @click="openModal('CBCT')">
               <div class="item-content">
-                <div class="item-icon">📊</div>
+                <div class="item-icon">
+                  <img src="@/assets/icons/bar_chart.png" class="emoji-16px" />
+                </div>
                 <span>CBCT</span>
               </div>
             </a-list-item>
             <a-list-item class="analysis-item" @click="openModal('MRI')">
               <div class="item-content">
-                <div class="item-icon">🧠</div>
+                <div class="item-icon">
+                  <img src="@/assets/icons/brain.png" class="emoji-16px" />
+                </div>
                 <span>MRI</span>
               </div>
             </a-list-item>
             <a-list-item class="analysis-item" @click="openModal('X线')">
               <div class="item-content">
-                <div class="item-icon">🩻</div>
+                <div class="item-icon">
+                  <img src="@/assets/icons/x-ray.png" class="emoji-16px" />
+                </div>
                 <span>X线</span>
               </div>
             </a-list-item>
             <a-list-item class="analysis-item" @click="openModal('面部照片')">
               <div class="item-content">
-                <div class="item-icon">📸</div>
+                <div class="item-icon">
+                  <img src="@/assets/icons/camera_with_flash.png" class="emoji-16px" />
+                </div>
                 <span>面部照片</span>
               </div>
             </a-list-item>
             <a-list-item class="analysis-item" @click="openModal('咬合')">
               <div class="item-content">
-                <div class="item-icon">🦷</div>
+                <div class="item-icon">
+                  <img src="@/assets/icons/tooth.png" class="emoji-16px" />
+                </div>
                 <span>咬合</span>
               </div>
             </a-list-item>
             <a-list-item class="analysis-item" @click="openModal('张口运动')">
               <div class="item-content">
-                <div class="item-icon">🗣️</div>
+                <div class="item-icon">
+                  <img src="@/assets/icons/speaking_head_in_silhouette.png" class="emoji-16px" />
+                </div>
                 <span>张口运动</span>
               </div>
             </a-list-item>
             <a-list-item class="analysis-item" @click="openModal('关节音')">
               <div class="item-content">
-                <div class="item-icon">🔊</div>
+                <div class="item-icon">
+                  <img src="@/assets/icons/loud_sound.png" class="emoji-16px" />
+                </div>
                 <span>关节音</span>
               </div>
             </a-list-item>
@@ -61,7 +77,9 @@
       <a-col :span="18" class="h-[100%]">
         <a-card :bordered="false" class="chat-card">
           <div class="chat-header">
-            <div class="header-icon">💬</div>
+            <div class="header-icon">
+              <img src="@/assets/icons/speech_balloon.png" class="emoji-22px" />
+            </div>
             <span class="header-title">初步问诊</span>
             <div class="header-status">
               <div class="status-dot"></div>
@@ -81,55 +99,27 @@
                   <div class="ai-avatar">
                     <!-- <div class="ai-avatar-icon">Ai</div> -->
                     <div class="ai-avatar-icon">
-                      <img
-                        alt="avatar"
-                        src="@/assets/images/ai-avatar.png"
-                        class="rounded-[8px]"
-                      />
+                      <img alt="avatar" src="@/assets/images/ai-avatar.png" class="rounded-[8px]" />
                     </div>
                   </div>
-                  <div
-                    class="message-bubble bot-bubble"
-                    v-html="m.content"
-                  ></div>
+                  <div class="message-bubble bot-bubble" v-html="m.content"></div>
                 </div>
-                <div
-                  v-if="m.status === 'failed' || m.status === 'timeout'"
-                  class="text-[12px] text-red-500 ml-14 mt-1"
-                >
+                <div v-if="m.status === 'failed' || m.status === 'timeout'" class="text-[12px] text-red-500 ml-14 mt-1">
                   {{ m.status === "timeout" ? "AI 回复超时" : "AI 回复失败" }}
-                  <a-link
-                    class="ml-2"
-                    @click="retryBot(m)"
-                    :disabled="isResponding"
-                    >重新生成</a-link
-                  >
+                  <a-link class="ml-2" @click="retryBot(m)" :disabled="isResponding">重新生成</a-link>
                 </div>
-                <div
-                  v-if="idx > 0"
-                  class="ml-14 mt-2 flex items-center gap-6 select-none"
-                >
-                  <button
-                    class="flex items-center gap-1 text-[12px] transition-colors"
-                    :class="
-                      m.feedback === 'like'
-                        ? 'text-blue-600'
-                        : 'text-gray-500 hover:text-blue-600'
-                    "
-                    @click="setFeedback(m, 'like')"
-                  >
+                <div v-if="idx > 0" class="ml-14 mt-2 flex items-center gap-6 select-none">
+                  <button class="flex items-center gap-1 text-[12px] transition-colors" :class="m.feedback === 'like'
+                      ? 'text-blue-600'
+                      : 'text-gray-500 hover:text-blue-600'
+                    " @click="setFeedback(m, 'like')">
                     <icon-thumb-up />
                     <span>满意</span>
                   </button>
-                  <button
-                    class="flex items-center gap-1 text-[12px] transition-colors"
-                    :class="
-                      m.feedback === 'dislike'
-                        ? 'text-blue-600'
-                        : 'text-gray-500 hover:text-blue-600'
-                    "
-                    @click="setFeedback(m, 'dislike')"
-                  >
+                  <button class="flex items-center gap-1 text-[12px] transition-colors" :class="m.feedback === 'dislike'
+                      ? 'text-blue-600'
+                      : 'text-gray-500 hover:text-blue-600'
+                    " @click="setFeedback(m, 'dislike')">
                     <icon-thumb-down />
                     <span>不满意</span>
                   </button>
@@ -141,44 +131,26 @@
                   {{ formatTime(m.createdAt) }}
                 </div>
                 <div class="message-wrapper user-message">
-                  <div
-                    class="message-bubble user-bubble"
-                    v-text="m.content"
-                  ></div>
+                  <div class="message-bubble user-bubble" v-text="m.content"></div>
                   <div class="user-avatar">
                     <!-- <div class="user-avatar-icon">👤</div> -->
                     <div class="user-avatar-icon">
-                      <img
-                        alt="avatar"
-                        src="@/assets/images/user-avatar.png"
-                        class="rounded-[8px]"
-                      />
+                      <img alt="avatar" src="@/assets/images/user-avatar.png" class="rounded-[8px]" />
                     </div>
                   </div>
                 </div>
-                <div
-                  class="text-[12px] text-right mr-14 mt-1"
-                  :class="{
-                    'text-gray-400': m.status === 'sending',
-                    'text-green-500': m.status === 'success',
-                    'text-red-500':
-                      m.status === 'failed' || m.status === 'timeout',
-                  }"
-                >
+                <div class="text-[12px] text-right mr-14 mt-1" :class="{
+                  'text-gray-400': m.status === 'sending',
+                  'text-green-500': m.status === 'success',
+                  'text-red-500':
+                    m.status === 'failed' || m.status === 'timeout',
+                }">
                   <template v-if="m.status === 'sending'">发送中…</template>
                   <template v-else-if="m.status === 'success'">已发送</template>
-                  <template v-else-if="m.status === 'failed'"
-                    >发送失败</template
-                  >
-                  <template v-else-if="m.status === 'timeout'"
-                    >发送超时</template
-                  >
-                  <a-link
-                    v-if="m.status === 'failed' || m.status === 'timeout'"
-                    class="ml-2"
-                    @click="retryUser(m)"
-                    >重新发送</a-link
-                  >
+                  <template v-else-if="m.status === 'failed'">发送失败</template>
+                  <template v-else-if="m.status === 'timeout'">发送超时</template>
+                  <a-link v-if="m.status === 'failed' || m.status === 'timeout'" class="ml-2"
+                    @click="retryUser(m)">重新发送</a-link>
                 </div>
               </div>
             </template>
@@ -187,11 +159,7 @@
               <div class="ai-avatar">
                 <!-- <div class="ai-avatar-icon">V</div> -->
                 <div class="ai-avatar-icon">
-                  <img
-                    alt="avatar"
-                    src="@/assets/images/ai-avatar.png"
-                    class="rounded-[8px]"
-                  />
+                  <img alt="avatar" src="@/assets/images/ai-avatar.png" class="rounded-[8px]" />
                 </div>
               </div>
               <div class="message-bubble bot-bubble typing-bubble">
@@ -207,27 +175,16 @@
 
           <div class="action-container">
             <!-- 操作按钮 -->
-            <div class="action-buttons">
-              <a-button
-                class="action-btn secondary-btn"
-                :disabled="isResponding"
-              >
+            <div v-if="messages[messages.length - 1]?.is_finished" class="action-buttons">
+              <a-button class="action-btn secondary-btn" :disabled="isResponding" @click="restartConsultation">
                 <template #icon><icon-refresh /></template>
                 重新问诊
               </a-button>
-              <a-button
-                class="action-btn secondary-btn"
-                :disabled="isResponding"
-                @click="goCase"
-              >
+              <a-button class="action-btn secondary-btn" :disabled="isResponding" @click="goCase">
                 <template #icon><icon-file /></template>
                 AI病历生成
               </a-button>
-              <a-button
-                class="action-btn primary-btn"
-                :loading="isResponding"
-                @click="goDiagnosis"
-              >
+              <a-button class="action-btn primary-btn" :loading="isResponding" @click="goDiagnosis">
                 <template #icon><icon-robot /></template>
                 AI诊断分析
               </a-button>
@@ -236,23 +193,13 @@
             <!-- 输入框 -->
             <div class="input-container">
               <div class="input-wrapper">
-                <a-textarea
-                  v-model="inputText"
-                  class="message-input"
-                  :auto-size="{ minRows: 3, maxRows: 6 }"
-                  placeholder="请描述您的问题，Enter发送（Shift+Enter换行）"
-                  @keydown.enter.prevent="onEnter"
-                />
+                <a-textarea v-model="inputText" class="message-input" :auto-size="{ minRows: 3, maxRows: 6 }"
+                  placeholder="请描述您的问题，Enter发送（Shift+Enter换行）" @keydown.enter.prevent="onEnter" />
                 <div class="input-actions">
-                  <a-button
-                    class="send-button"
-                    type="primary"
-                    :disabled="!canSend"
-                    :loading="isResponding"
-                    @click="onSend"
-                  >
+                  <a-button class="send-button" type="primary" :disabled="!canSend" :loading="isResponding"
+                    @click="onSend">
                     <template #icon><icon-send /></template>
-                    提交
+                    发送
                   </a-button>
                 </div>
               </div>
@@ -263,11 +210,7 @@
     </a-row>
   </div>
 
-  <MultimodalAnalysisModal
-    :visible="modalVisible"
-    :tool="activeTool"
-    @close="modalVisible = false"
-  />
+  <MultimodalAnalysisModal :visible="modalVisible" :tool="activeTool" @close="modalVisible = false" />
 </template>
 
 <script setup lang="ts">
@@ -275,7 +218,7 @@
  * 效果演示页面（主体内容）。
  * - 使用全局注册的 DefaultLayout 提供顶部栏与左侧工具导航
  */
-import { ref, nextTick, watch, computed } from "vue";
+import { ref, nextTick, watch, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { defineAsyncComponent } from "vue";
 const MultimodalAnalysisModal = defineAsyncComponent(
@@ -289,10 +232,13 @@ import {
   IconRobot,
   IconSend,
 } from "@arco-design/web-vue/es/icon";
+import { http } from "@/services/http";
+import { useChatStore } from "@/stores/chat";
 
 type Role = "bot" | "user";
 type MessageStatus = "success" | "sending" | "failed" | "timeout";
 type Feedback = "like" | "dislike" | null;
+
 interface ChatMessage {
   id: string;
   role: Role;
@@ -300,26 +246,31 @@ interface ChatMessage {
   createdAt: number;
   status: MessageStatus;
   feedback?: Feedback;
+  is_finished?: boolean;
 }
 
+// AI聊天接口响应类型
+interface AiChatResponse {
+  is_finished?: boolean;
+  next_question?: string;
+}
+
+const sessionId = ref("tmj-aibot-001");
+
 const now = Date.now();
-const messages = ref<ChatMessage[]>([
-  {
-    id: "m1",
-    role: "bot",
-    content:
-      "<b class='text-[15px]'>您好，我是TMJ数字专家，很高兴为您服务。</b><br/>您现在处于<span class='text-blue-600'>初诊状态</span>，我将为您进行初步问诊。",
-    createdAt: now,
-    status: "success",
-  },
-  {
-    id: "m2",
-    role: "bot",
-    content: "请问最近有什么不舒服的情况？",
-    createdAt: now,
-    status: "success",
-  },
-]);
+// 默认欢迎消息
+const defaultWelcomeMessage: ChatMessage = {
+  id: "m1",
+  role: "bot",
+  content:
+    "<b class='text-[15px]'>您好，我是TMJ数字专家，很高兴为您服务。</b><br/>您现在处于<span class='text-blue-600'>初诊状态</span>，我将为您进行初步问诊。",
+  createdAt: now,
+  status: "success",
+  is_finished: false,
+};
+
+// 从store中恢复会话状态，如果没有则使用默认欢迎消息
+const messages = ref<ChatMessage[]>([]);
 
 const inputText = ref("");
 const isResponding = ref(false);
@@ -327,6 +278,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 const router = useRouter();
 const modalVisible = ref(false);
 const activeTool = ref("X线");
+const chatStore = useChatStore();
 
 const canSend = computed(
   () => inputText.value.trim().length > 0 && !isResponding.value
@@ -341,82 +293,7 @@ function scrollToBottom() {
 
 watch(messages, scrollToBottom, { deep: true });
 
-function pushMessage(
-  role: Role,
-  content: string,
-  status: MessageStatus = "success"
-) {
-  messages.value.push({
-    id: `${Date.now()}-${Math.random()}`,
-    role,
-    content,
-    createdAt: Date.now(),
-    status,
-  });
-}
-
-function mockAiReply(userText: string): string {
-  if (/疼|痛/.test(userText)) {
-    return "了解您的疼痛情况。请问疼痛发生在张口、闭口还是咀嚼时更明显？强度如何（1-10分）？";
-  }
-  if (/耳|声音|咔/.test(userText)) {
-    return "出现关节弹响时是否伴随疼痛？频率有多高？是否在早晨更明显？";
-  }
-  return "我已记录您的描述。为了更准确评估，请补充持续时间、诱因与是否影响张口幅度。";
-}
-
-const AI_TIMEOUT_MS = 5000;
-const USER_TIMEOUT_MS = 5000;
-
-function simulateRequest(
-  minMs: number,
-  maxMs: number,
-  failRate = 0.15,
-  timeoutMs = 5000
-): Promise<"ok"> {
-  const delay = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
-  return new Promise((resolve, reject) => {
-    const mainTimer = setTimeout(() => {
-      if (Math.random() < failRate) reject(new Error("fail"));
-      else resolve("ok");
-    }, delay);
-    const timeoutTimer = setTimeout(() => {
-      clearTimeout(mainTimer);
-      reject(new Error("timeout"));
-    }, timeoutMs);
-    const settle = (fn: (v?: any) => void) => (v?: any) => {
-      clearTimeout(mainTimer);
-      clearTimeout(timeoutTimer);
-      fn(v);
-    };
-    // wrap resolve/reject to clear timers
-    // @ts-ignore
-    resolve = settle(resolve);
-    // @ts-ignore
-    reject = settle(reject);
-  });
-}
-
-async function replyAsync(userText: string) {
-  isResponding.value = true;
-  try {
-    await Promise.race([simulateRequest(600, 1200, 0.15, AI_TIMEOUT_MS)]);
-    pushMessage("bot", mockAiReply(userText), "success");
-  } catch (err: any) {
-    const isTimeout = err && err.message === "timeout";
-    pushMessage(
-      "bot",
-      isTimeout
-        ? "抱歉，本次回复超时，请稍后重试。"
-        : "抱歉，生成失败，请稍后重试。",
-      isTimeout ? "timeout" : "failed"
-    );
-  } finally {
-    isResponding.value = false;
-  }
-}
-
-function onSend() {
+async function onSend() {
   if (!canSend.value) return;
   const text = inputText.value.trim();
   inputText.value = "";
@@ -428,54 +305,157 @@ function onSend() {
     createdAt: Date.now(),
     status: "sending",
   });
+  // 同步更新store
+  chatStore.setMessages(messages.value);
   scrollToBottom();
-  // 模拟用户消息发送
-  simulateRequest(300, 800, 0.15, USER_TIMEOUT_MS)
-    .then(() => {
-      const m = messages.value.find((x) => x.id === id);
-      if (m) m.status = "success";
-      replyAsync(text);
-    })
-    .catch((err: any) => {
-      const m = messages.value.find((x) => x.id === id);
-      if (m) m.status = err && err.message === "timeout" ? "timeout" : "failed";
+
+  // 先添加AI正在生成回复的状态消息
+  const aiTypingId = `${Date.now()}-${Math.random()}`;
+  messages.value.push({
+    id: aiTypingId,
+    role: "bot",
+    content: "正在生成回复...",
+    createdAt: Date.now(),
+    status: "sending",
+  });
+  scrollToBottom();
+
+  try {
+    // 调用实际接口
+    const res = await http.post<AiChatResponse>("/ai-chat", {
+      conversation: messages.value.slice(1).map((x) => ({
+        role: x.role === "user" ? "user" : "assistant",
+        content: x.content,
+      })),
+      patient_reply: text,
+      session_id: sessionId.value,
     });
+
+    // 更新用户消息状态为成功
+    const userMessage = messages.value.find((x) => x.id === id);
+    if (userMessage) {
+      userMessage.status = "success";
+    }
+
+    // 处理AI回复
+    const responseData = res && "data" in res ? res.data : res;
+    if (responseData) {
+      // 更新AI正在生成的消息为实际回复
+      setTimeout(() => {
+        const aiTypingMessage = messages.value.find((x) => x.id === aiTypingId);
+        if (aiTypingMessage) {
+          aiTypingMessage.content = responseData.next_question || "收到您的消息";
+          aiTypingMessage.status = "success";
+          aiTypingMessage.is_finished = responseData.is_finished || false;
+          // 同步更新store
+          chatStore.setMessages(messages.value);
+        }
+      }, 500)
+    }
+  } catch (error: any) {
+    // 处理错误情况
+    const userMessage = messages.value.find((x) => x.id === id);
+    if (userMessage) {
+      userMessage.status = error.code === "ECONNABORTED" ? "timeout" : "failed";
+    }
+
+    // 移除AI正在生成的消息，因为用户消息发送失败，AI不会回复
+    setTimeout(() => {
+      const aiTypingMessageIndex = messages.value.findIndex((x) => x.id === aiTypingId);
+      if (aiTypingMessageIndex !== -1) {
+        messages.value.splice(aiTypingMessageIndex, 1);
+      }
+    }, 1000)
+  }
 }
 
-function retryUser(m: ChatMessage) {
+async function retryUser(m: ChatMessage) {
   if (m.role !== "user" || m.status === "sending") return;
   m.status = "sending";
-  simulateRequest(300, 800, 0.15, USER_TIMEOUT_MS)
-    .then(() => {
-      m.status = "success";
-      replyAsync(m.content);
-    })
-    .catch((err: any) => {
-      m.status = err && err.message === "timeout" ? "timeout" : "failed";
+
+  // 先添加AI正在生成回复的状态消息
+  const aiTypingId = `${Date.now()}-${Math.random()}`;
+  messages.value.push({
+    id: aiTypingId,
+    role: "bot",
+    content: "正在生成回复...",
+    createdAt: Date.now(),
+    status: "sending",
+  });
+  scrollToBottom();
+
+  try {
+    // 调用实际接口重试
+    const res = await http.post<AiChatResponse>("/ai-chat", {
+      conversation: messages.value.slice(1),
+      patient_reply: m.content,
+      session_id: sessionId.value,
     });
+
+    m.status = "success";
+
+    // 处理AI回复
+    const responseData = res && "data" in res ? res.data : res;
+    if (responseData) {
+      // 更新AI正在生成的消息为实际回复
+      const aiTypingMessage = messages.value.find((x) => x.id === aiTypingId);
+      if (aiTypingMessage) {
+        aiTypingMessage.content = responseData.next_question || "收到您的消息";
+        aiTypingMessage.status = "success";
+        aiTypingMessage.is_finished = responseData.is_finished || false;
+      }
+    }
+  } catch (error: any) {
+    m.status = error.code === "ECONNABORTED" ? "timeout" : "failed";
+
+    // 移除AI正在生成的消息，因为用户消息重试失败，AI不会回复
+    setTimeout(() => {
+      const aiTypingMessageIndex = messages.value.findIndex((x) => x.id === aiTypingId);
+      if (aiTypingMessageIndex !== -1) {
+        messages.value.splice(aiTypingMessageIndex, 1);
+      }
+    }, 1000);
+  }
 }
 
-function retryBot(m: ChatMessage) {
+async function retryBot(m: ChatMessage) {
   if (m.role !== "bot" || isResponding.value) return;
   // 重新生成基于上一条用户消息
   const lastUser = [...messages.value].reverse().find((x) => x.role === "user");
   if (!lastUser) return;
   isResponding.value = true;
   m.status = "sending";
-  simulateRequest(600, 1200, 0.15, AI_TIMEOUT_MS)
-    .then(() => {
+
+  try {
+    // 显示AI正在重新生成回复
+    m.content = "AI正在重新思考中...";
+    m.status = "sending";
+    scrollToBottom();
+
+    // 调用实际接口重新生成回复
+    const res = await http.post<AiChatResponse>("/ai-chat", {
+      conversation: messages.value.slice(1),
+      patient_reply: lastUser.content,
+      session_id: sessionId.value,
+    });
+
+    const responseData = res && "data" in res ? res.data : res;
+    if (responseData) {
       // 替换失败消息为新回复
-      m.content = mockAiReply(lastUser.content);
+      m.content = responseData.next_question || "收到您的消息";
       m.createdAt = Date.now();
       m.status = "success";
-    })
-    .catch((err: any) => {
-      m.status = err && err.message === "timeout" ? "timeout" : "failed";
-      m.createdAt = Date.now();
-    })
-    .then(() => {
-      isResponding.value = false;
-    });
+      m.is_finished = responseData.is_finished || false;
+    }
+  } catch (error: any) {
+    m.status = error.code === "ECONNABORTED" ? "timeout" : "failed";
+    m.content = error.code === "ECONNABORTED"
+      ? "抱歉，本次回复超时，请稍后重试。"
+      : "抱歉，生成失败，请稍后重试。";
+    m.createdAt = Date.now();
+  } finally {
+    isResponding.value = false;
+  }
 }
 
 function onEnter(e: KeyboardEvent) {
@@ -506,17 +486,83 @@ function setFeedback(m: ChatMessage, fb: Feedback) {
 }
 
 function goCase() {
+  // 将当前会话上下文写入全局 store 后跳转
+  chatStore.setSession(sessionId.value);
+  chatStore.setMessages(messages.value);
   router.push({ name: "case" });
 }
 
 function goDiagnosis() {
+  // 将当前会话上下文写入全局 store 后跳转
+  chatStore.setSession(sessionId.value);
+  chatStore.setMessages(messages.value);
   router.push({ name: "diagnosis" });
+}
+
+function restartConsultation() {
+  // 重新开始问诊，清空当前会话记录并生成新的sessionId
+  chatStore.reset();
+  // 同步本地sessionId
+  sessionId.value = chatStore.sessionId;
+  // 清空本地消息记录
+  messages.value = [defaultWelcomeMessage];
+  initChat()
+  // 滚动到顶部
+  if (scrollEl.value) {
+    scrollEl.value.scrollTop = 0;
+  }
 }
 
 function openModal(tool: string) {
   activeTool.value = tool;
   modalVisible.value = true;
 }
+
+async function initChat() {
+  try {
+    const res = await http.post<AiChatResponse>("/ai-chat", {
+      conversation: [],
+      patient_reply: "你好",
+      session_id: sessionId.value,
+    });
+
+    const responseData = res && "data" in res ? res.data : res;
+    if (responseData) {
+      // 更新欢迎消息或添加新的AI回复
+      messages.value.push({
+        id: `${Date.now()}-${Math.random()}`,
+        role: "bot",
+        content: responseData.next_question || "请问最近有什么不舒服的情况？",
+        createdAt: Date.now(),
+        status: "success",
+        is_finished: responseData.is_finished || false,
+      });
+    }
+  } catch (error) {
+    console.error("初始化聊天失败:", error);
+    // 保持原有的欢迎消息
+  }
+}
+
+onMounted(async () => {
+  // 从store中恢复会话状态
+  if (chatStore.messages.length > 0) {
+    // 如果有保存的会话记录，恢复它们
+    messages.value = [...chatStore.messages];
+    sessionId.value = chatStore.sessionId;
+  } else {
+    // 如果没有会话记录，使用默认欢迎消息
+    messages.value = [defaultWelcomeMessage];
+    // 确保store中的sessionId与本地一致
+    chatStore.setSession(sessionId.value);
+    initChat()
+  }
+
+  // 滚动到底部
+  nextTick(() => {
+    scrollToBottom();
+  });
+});
 </script>
 
 <style lang="scss" scoped>
@@ -665,10 +711,12 @@ function openModal(tool: string) {
 }
 
 @keyframes pulse {
+
   0%,
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
@@ -684,11 +732,14 @@ function openModal(tool: string) {
   margin-bottom: 20px;
 
   /* 隐藏滚动条但保持滚动功能 */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
 
   &::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
+    display: none;
+    /* Chrome, Safari, Opera */
   }
 
   /* 滚动时显示淡入淡出效果 */
@@ -699,11 +750,9 @@ function openModal(tool: string) {
     left: 0;
     right: 0;
     height: 10px;
-    background: linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.95),
-      transparent
-    );
+    background: linear-gradient(to bottom,
+        rgba(255, 255, 255, 0.95),
+        transparent);
     pointer-events: none;
     z-index: 10;
   }
@@ -864,12 +913,14 @@ function openModal(tool: string) {
 }
 
 @keyframes typing {
+
   0%,
   60%,
   100% {
     transform: translateY(0);
     opacity: 0.4;
   }
+
   30% {
     transform: translateY(-10px);
     opacity: 1;
@@ -897,12 +948,13 @@ function openModal(tool: string) {
     color: #6b7280;
 
     &:hover:not(:disabled) {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+      background: linear-gradient(135deg,
+          rgba(255, 255, 255, 0.95) 0%,
+          rgba(248, 250, 252, 0.95) 100%);
       border-color: #3b82f6;
       color: #1e40af;
       transform: translateY(-2px);
-      box-shadow: 
-        0 8px 20px rgba(59, 130, 246, 0.15),
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15),
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
     }
   }

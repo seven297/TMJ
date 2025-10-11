@@ -3,3 +3,5 @@ TMJ问诊DEMO需求汇总V1.docx
 TMJ问诊DEMO需求汇总V2.docx
 dist
 node_modules
+env.example
+*.pdf

@@ -1,95 +1,125 @@
 <template>
   <div class="main-content">
     <div class="main-row">
-      <!-- 病历区（业务） -->
-      <div class="case-wrapper">
-        <a-card :bordered="false" class="medical-record-card">
-          <!-- 顶部导航 -->
-          <div class="top-navigation">
-            <div class="nav-left">
-              <!-- <span class="nav-text">已生成问诊病历</span> -->
-              <a-button class="return-btn" @click="onReturn"> 返回 </a-button>
-            </div>
-          </div>
-          <!-- 主标题 -->
-          <div class="main-title">
-            <h1>AI问诊病历</h1>
-          </div>
-
-          <!-- 患者信息 -->
-          <div class="patient-info flex items-center justify-between">
-            <div class="patient-details">
-              <span class="patient-label">患者：</span>
-              <div class="flex flex-row gap-[24px]">
-                <span class="patient-value">匿名患者</span>
-                <span class="patient-gender">男性</span>
-                <span class="patient-age">16岁</span>
+      <a-spin :loading="loading" tip="AI病历生成中..." dot class="w-[100%] h-[100%]">
+        <!-- 实际内容 -->
+        <div class="case-wrapper">
+          <a-card :bordered="false" class="medical-record-card">
+            <!-- 顶部导航 -->
+            <div class="top-navigation">
+              <div class="nav-left">
+                <!-- <span class="nav-text">已生成问诊病历</span> -->
+                <a-button class="return-btn" @click="onReturn"> 返回 </a-button>
               </div>
             </div>
-            <div class="consultation-time">
-              <span class="time-label">就诊时间：</span>
-              <span class="time-value">{{ nowText }}</span>
-            </div>
-          </div>
-
-          <!-- 病历内容区 -->
-          <div class="medical-record-content">
-            <div class="record-section">
-              <div class="section-label">主诉：</div>
-              <div class="section-content">张嘴疼痛,且有声音</div>
+            <!-- 主标题 -->
+            <div class="main-title">
+              <h1>AI问诊病历</h1>
             </div>
 
-            <div class="record-section">
-              <div class="section-label">现病史：</div>
-              <div class="section-content">
-                患者3-4天前出现牙疼,持续存在,咬合时会有声响,无缓解因素,未接受治疗
+            <!-- 骨架屏 -->
+            <SkeletonCard v-if="skeletonLoading" :section-count="5" />
+            <div v-else class="scroll-content">
+              <!-- 患者信息 -->
+              <div class="patient-info flex items-center justify-between">
+                <div class="patient-details">
+                  <!-- <span class="patient-label">患者：</span> -->
+                  <div class="flex flex-row gap-[24px]">
+                    <span class="patient-value">{{ recordResult?.present_illness || '匿名患者' }}</span>
+                    <!-- <span class="patient-gender">男性</span>
+                    <span class="patient-age">16岁</span> -->
+                  </div>
+                </div>
+                <!-- <div class="consultation-time">
+                  <span class="time-label">就诊时间：</span>
+                  <span class="time-value">{{ nowText }}</span>
+                </div> -->
+              </div>
+
+              <!-- 病历内容区 -->
+              <div class="medical-record-content">
+                <div class="record-section">
+                  <div class="section-label">主诉：</div>
+                  <div class="section-content">{{ recordResult?.chief_complaint || '无' }}</div>
+                </div>
+
+                <div class="record-section">
+                  <div class="section-label">现病史：</div>
+                  <div class="section-content">
+                    {{ recordResult?.present_illness || '无' }}
+                  </div>
+                </div>
+
+                <div class="record-section">
+                  <div class="section-label">既往史：</div>
+                  <div class="section-content">{{ recordResult?.past_medical_history || '无' }}</div>
+                </div>
+
+                <div class="record-section">
+                  <div class="section-label">过敏史：</div>
+                  <div class="section-content">{{ recordResult?.allergy_history || '无' }}</div>
+                </div>
+
+                <div class="record-section">
+                  <div class="section-label">家族史：</div>
+                  <div class="section-content">{{ recordResult?.family_history || '无' }}</div>
+                </div>
               </div>
             </div>
 
-            <div class="record-section">
-              <div class="section-label">既往史：</div>
-              <div class="section-content">曾经患过牙周炎</div>
+            <!-- 操作按钮 -->
+            <div class="action-buttons">
+              <a-button class="action-btn secondary-btn" @click="onRefresh">
+                <template #icon><icon-refresh /></template>
+                重新生成
+              </a-button>
+              <a-button
+                class="action-btn primary-btn"
+                type="primary"
+                @click="onAdopt"
+              >
+                <template #icon><icon-bulb /></template>
+                采纳病历
+              </a-button>
             </div>
-
-            <div class="record-section">
-              <div class="section-label">过敏史：</div>
-              <div class="section-content">无药物过敏史</div>
-            </div>
-
-            <div class="record-section">
-              <div class="section-label">家族史：</div>
-              <div class="section-content">无家族史</div>
-            </div>
-          </div>
-
-          <!-- 操作按钮 -->
-          <div class="action-buttons">
-            <a-button class="action-btn secondary-btn" @click="onRefresh">
-              <template #icon><icon-refresh /></template>
-              重新生成
-            </a-button>
-            <a-button
-              class="action-btn primary-btn"
-              type="primary"
-              @click="onAdopt"
-            >
-              <template #icon><icon-bulb /></template>
-              采纳病历
-            </a-button>
-          </div>
-        </a-card>
-      </div>
+          </a-card>
+        </div>
+      </a-spin>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { Message } from "@arco-design/web-vue";
 import { IconRefresh, IconBulb } from "@arco-design/web-vue/es/icon";
+import { useChatStore } from "@/stores/chat";
+import { http } from "@/services/http";
+
+interface RecordResponse {
+  allergy_history: string;
+  chief_complaint: string;
+  family_history: string;
+  past_medical_history: string;
+  present_illness: string;
+}
 
 const router = useRouter();
+const chatStore = useChatStore();
+
+// 从全局 store 读取 sessionId 与 messages
+const sessionId = computed(() => chatStore.sessionId);
+const messages = computed(() => chatStore.messages);
+
+const nowText = ref(formatNow());
+
+// 页面加载状态
+const loading = ref(false);
+const skeletonLoading = ref(true);
+
+// 诊断结果
+const recordResult = ref<RecordResponse>();
 
 function formatNow() {
   const d = new Date();
@@ -99,18 +129,60 @@ function formatNow() {
   )}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
 }
 
-const nowText = ref(formatNow());
+// 获取诊断结果
+async function getDiagnosisResult(isRefresh = false) {
+  try {
+    loading.value = true;
+    const payload = {
+      conversation: messages.value.slice(1).map((x) => ({
+        role: x.role === "user" ? "user" : "assistant",
+        content: x.content,
+      })),
+      session_id: sessionId.value,
+    };
+    const response = await http.post<{
+      chief_complaint: RecordResponse;
+    }>("/chat-diagnosis", payload, { showErrorMessage: true });
+    
+    // 处理返回的诊断结果
+    const responseData =
+      response && "data" in response ? response.data : response;
+    if (responseData) {
+      recordResult.value = responseData.chief_complaint;
+      // 这里可以根据实际 API 返回的数据结构来更新页面内容
+      skeletonLoading.value = false;
+    }
+
+    if (isRefresh) {
+      Message.success("病历已重新生成");
+    }
+  } catch (err) {
+    // 错误提示在 http 封装已处理（当 showErrorMessage 为 true）
+  } finally {
+    loading.value = false;
+  }
+}
+
+// 进入页面模拟加载过程
+onMounted(() => {
+  getDiagnosisResult();
+});
 
 function onRefresh() {
+  loading.value = true;
   nowText.value = formatNow();
-  Message.success("病历已重新生成");
+
+  getDiagnosisResult(true);
 }
 
 function onReturn() {
-  router.back();
+  // router.back();
+  // 返回时保持当前会话状态，不刷新页面
+  router.push({ name: "effect" });
 }
 
 function onAdopt() {
+  // 可使用 messages.value 生成结构化病历内容后提交
   Message.success("病历已录入医生工作站");
 }
 </script>
@@ -118,10 +190,11 @@ function onAdopt() {
 <style lang="scss" scoped>
 /* 主容器样式 */
 .main-content {
-  height: 100%;
+  // height: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  box-sizing: border-box;
 }
 
 /* 顶部导航 */
@@ -165,20 +238,23 @@ function onAdopt() {
 
 .main-row {
   width: 100%;
-  max-width: 1200px;
   height: 100%;
+  max-width: 1200px;
+  // min-height: calc(100vh - 40px);
   margin: 0 auto;
-  padding: 24px;
+  // padding: 24px;
   position: relative;
   z-index: 1;
 }
 
 .case-wrapper {
   width: 100%;
+  height: 100%;
 }
 
 /* 病历卡片样式 */
 .medical-record-card {
+  height: 100%;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-radius: 24px;
@@ -201,7 +277,9 @@ function onAdopt() {
   }
 
   :deep(.arco-card-body) {
+    height: 100%;
     padding: 40px;
+    box-sizing: border-box;
   }
 }
 

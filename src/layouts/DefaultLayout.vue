@@ -36,7 +36,9 @@
     </a-layout>
     <!-- 主体区域由子路由渲染 -->
     <div class="main-container relative z-10">
-      <RouterView />
+      <keep-alive>
+        <RouterView />
+      </keep-alive>
     </div>
   </div>
 </template>
@@ -53,8 +55,17 @@
 .main-container {
   width: 100vw;
   height: calc(100vh - 56px);
+  overflow-y: auto;
   padding: 24px;
   box-sizing: border-box;
+
+  /* 隐藏滚动条但保持滚动功能 */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
 }
 
 /* 背景装饰圆形 */
