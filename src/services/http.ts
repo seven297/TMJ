@@ -5,7 +5,7 @@ import { Message } from '@arco-design/web-vue'
 
 // 运行时环境变量（Vite 只会暴露以 VITE_ 开头的）
 const DEFAULT_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/'
-const DEFAULT_TIMEOUT = 15000
+const DEFAULT_TIMEOUT = 300000
 
 function createAxiosInstance(baseURL: string = DEFAULT_BASE_URL): AxiosInstance {
   const instance = axios.create({

@@ -15,45 +15,18 @@
       </div>
     </template>
 
-    <div class="bg-[#2b2b2b] text-white rounded-md p-4">
-      <div class="grid grid-cols-12 gap-4">
-        <!-- 预览区 -->
-        <div class="col-span-5 space-y-4">
-          <div class="bg-black/30 rounded-md p-2">
-            <div class="text-[12px] text-gray-300 mb-2">侧位片</div>
-            <a-image :src="preview1" :preview="false" class="w-full h-[160px] object-cover rounded" />
+    <div class="bg-[#2b2b2b] text-white rounded-md">
+      <!-- 图片展示区域 -->
+      <div class="text-center">
+        <div class="relative inline-block">
+          <a-image 
+            :src="currentImage.src" 
+            :preview="true" 
+            class="w-full max-h-[60vh] object-cover border-gray-600 hover:border-blue-400 transition-colors" 
+          />
+          <div class="absolute bottom-2 left-2 bg-black bg-opacity-70 text-white text-sm px-3 py-1 rounded">
+            {{ currentImage.label }}
           </div>
-          <div class="bg-black/30 rounded-md p-2">
-            <div class="text-[12px] text-gray-300 mb-2">全景片</div>
-            <a-image :src="preview2" :preview="false" class="w-full h-[160px] object-cover rounded" />
-          </div>
-        </div>
-
-        <!-- 指标表 -->
-        <div class="col-span-7">
-          <a-table
-            :data="rows"
-            :pagination="false"
-            :bordered="false"
-            :scroll="{ y: 340 }"
-            size="small"
-            row-key="key"
-            class="bg-transparent"
-          >
-            <a-table-column title="测量项目" data-index="name" />
-            <a-table-column title="标准值" data-index="std" />
-            <a-table-column title="标准差" data-index="stddev" />
-            <a-table-column title="测量值">
-              <template #cell="{ record }">
-                <span :class="record.type === 'alert' ? 'text-red-400' : 'text-green-400'">{{ record.value }}</span>
-              </template>
-            </a-table-column>
-            <a-table-column title="测量结果提示">
-              <template #cell="{ record }">
-                <span :class="record.type === 'alert' ? 'text-red-400' : 'text-green-400'">{{ record.tip }}</span>
-              </template>
-            </a-table-column>
-          </a-table>
         </div>
       </div>
     </div>
@@ -62,10 +35,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import xrayImage from '@/assets/images/xray.png'
-import panoramicImage from '@/assets/images/panoramic.jpg'
 
-defineProps<{
+const props = defineProps<{
   visible: boolean
   tool: string
 }>()
@@ -78,25 +49,32 @@ const timeText = computed(() => {
   return `${d.getFullYear()}/${p(d.getMonth() + 1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`
 })
 
-// 示例图片（可替换为真实数据）
-const preview1 = panoramicImage
-const preview2 = xrayImage
+// 根据工具类型返回对应的图片配置
+const getToolImage = (toolType: string) => {
+  const imageConfigs = {
+    'CBCT': { src: '/src/assets/images/xray.png', label: 'CBCT三维重建' },
+    'MRI': { src: '/src/assets/images/MRI.png', label: 'MRI影像' },
+    'X线': { src: '/src/assets/images/xray.png', label: 'X线影像' },
+    '面部照片': { src: '/src/assets/images/face.png', label: '面部照片' },
+    '咬合': { src: '/src/assets/images/panoramic.jpg', label: '咬合关系' },
+    '张口运动': { src: '/src/assets/images/face.png', label: '张口运动' },
+    '关节音': { src: '/src/assets/images/xray.png', label: '关节音分析' }
+  }
+  
+  return imageConfigs[toolType as keyof typeof imageConfigs] || { src: '/src/assets/images/xray.png', label: '默认图片' }
+}
 
-
-type Row = { key: string; name: string; std: string | number; stddev: string | number; value: string | number; type: 'ok' | 'alert'; tip: string }
-const rows: Row[] = [
-  { key: 'SNA', name: 'SNA', std: 82.0, stddev: 4.1, value: 81.7, type: 'ok', tip: '上颌前后位置正常' },
-  { key: 'SNB', name: 'SNB', std: 80.1, stddev: 3.5, value: 90.7, type: 'alert', tip: '下颌过度前突' },
-  { key: 'ANB', name: 'ANB', std: 2.3, stddev: 1.6, value: -9.1, type: 'alert', tip: '骨性Ⅲ类' },
-  { key: 'FMA', name: 'FMA(FH-MP)', std: 27.3, stddev: 6.1, value: 25.7, type: 'ok', tip: '下颌角接近正常' },
-  { key: 'Wits', name: 'Witsmhm', std: 0, stddev: 2, value: -4.2, type: 'alert', tip: '骨性Ⅲ类倾向' },
-]
+// 当前显示的图片
+const currentImage = computed(() => {
+  return getToolImage(props.tool)
+})
 </script>
 
 <style lang="scss" scoped>
 :deep(.arco-image-img) {
   width: 100%;
   height: 100%;
+  max-height: 60vh;
 }
 </style>
 
